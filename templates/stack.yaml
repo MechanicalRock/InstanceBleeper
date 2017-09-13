@@ -39,47 +39,8 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: >
-          var aws = require('aws-sdk');
-          module.exports.sendEmail = (event, context, callback) => {
-              var ses = new aws.SES({
-                  apiVersion: '2010-12-01',
-                  region: "us-east-1"
-              });
-
-              var to = [process.env.DestinationEmail]
-              var from = process.env.DestinationEmail
-
-              ses.sendEmail({
-                  Source: from,
-                  Destination: {
-                      ToAddresses: to
-                  },
-                  Message: {
-                      Subject: {
-                          Data: 'Alert from the Instance Bleeper'
-                      },
-                      Body: {
-                          Text: {
-                              Data: JSON.stringify(event),
-                          }
-                      }
-                  }
-              }, function(err, data) {
-                  if (err) throw err
-                  console.log('Email sent:');
-                  console.log(data);
-              });
-
-              const response = {
-                  statusCode: 200,
-                  body: JSON.stringify({
-                      message: 'Go Serverless v1.0! Your function executed successfully!',
-                      input: event,
-                  }),
-              };
-              callback(null, response);
-          };
+        S3Bucket: Fn::Join: [ "-", [ "instance-bleeper", !Ref "AWS::AccountId" ] ]
+        S3Key: instancebleeper.zip
       Description: Instance Bleeper Event Handler
       FunctionName: InstanceBleeperEventHandler
       Environment:
