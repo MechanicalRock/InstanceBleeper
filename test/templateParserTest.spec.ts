@@ -6,7 +6,7 @@ import sendEmail from '../src'
 
 const mockData: LambdaEvent = {
     version: "0",
-    id: "ba1abec3-7aa3-1d0c-10b0-904559bf1f78",
+    id: "ba1abec3-7aa3-1d0c-10b0-8",
     'detail-type': "EC2 Instance State-change Notification",
     source: "aws.ec2",
     account: "some random value",

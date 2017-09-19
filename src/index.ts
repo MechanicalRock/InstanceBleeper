@@ -5,7 +5,7 @@ import { LambdaEvent, EmailTemplate, Email, Response } from './types';
 const templateFilename: string = '../templates/template.html';
 const html: string = templateBuilder.getFileContents(templateFilename);
 
-const sendEmail = (event: LambdaEvent, context: any, callback: any): any => {
+export const sendEmail = (event: LambdaEvent, context: any, callback: any): any => {
     const to: Array<string> = [process.env.DestinationEmail];
     const from = process.env.DestinationEmail;
     const templateData: EmailTemplate = templateBuilder.buildTemplateObject(event);
@@ -50,5 +50,3 @@ const sendEmail = (event: LambdaEvent, context: any, callback: any): any => {
 
     callback(null, response);
 }
-
-export default sendEmail;
