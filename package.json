@@ -4,7 +4,7 @@
   "description": "notifies of newly created instances",
   "main": "lambda.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --ui tdd"
   },
   "repository": {
     "type": "git",

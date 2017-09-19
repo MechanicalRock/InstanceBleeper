@@ -1,5 +1,6 @@
 'use strict';
-var expect = require('chai').expect;
+
+var assert = require('chai').assert;
 var templateBuilder = require('../src/emailTemplateBuilder');
 
 var mockData = {
@@ -19,22 +20,28 @@ var mockData = {
 
 var filename = '../templates/template.html';
 
-describe("Template Parser:", () => {
+suite('Template Parser:', () => {
 
-    it('should open the html file', () => {
-        var html = templateBuilder.getFileContents(filename)
-        expect(html.length).to.be.above(1)
+    var html = templateBuilder.getFileContents(filename);
+    var templateData = templateBuilder.buildTemplateObject(mockData);
+
+    test('Get File Contents', () => {
+        assert(html.length > 1, 'Template is not undefined');
+        assert.typeOf(html, 'string', 'html is of type string');
+    }); 
+
+    test('Build Template Object', () => {
+        assert(templateData.region === mockData.region);
+        assert.typeOf(templateData.launchTime, 'string', 'Launch Time is now a string object');
+        assert(templateData.instanceId === mockData.detail['instance-id']);
     });
 
-    it("should replace the template variables with the json values", () => {
-        var html = templateBuilder.getFileContents(filename)
-        var templateData = templateBuilder.buildTemplateObject(mockData);
+    test('Get Html String', () => {
         var htmlString = templateBuilder.getHTMLString(html, templateData);
 
-        expect(htmlString).to.contain(templateData.instanceId);
-        expect(htmlString).to.contain(templateData.launchTime);
-        expect(htmlString).to.contain(templateData.region);
+        assert.include(htmlString, templateData.instanceId);
+        assert.include(htmlString, templateData.launchTime);
+        assert.include(htmlString, templateData.region);
     });
-
 
 });
