@@ -10,8 +10,10 @@ CAPABILITY_NAMED_IAM=$3
 pip install awscli --upgrade --user
 
 # package lambda function
+npm install -g typescript
 npm install --only=production
-zip -r instancebleeper.zip .
+tsc src/*.ts
+zip -r instancebleeper.zip src/*.js
 
 # deploy everything
 aws cloudformation create-stack --stack-name cf-stack-set-role \
