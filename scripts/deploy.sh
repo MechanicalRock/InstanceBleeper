@@ -11,13 +11,13 @@ pip install awscli --upgrade --user
 # package lambda function
 sudo npm i -g typescript
 npm i --only=production
-tsc src/*.ts
-zip -r instancebleeper.zip src/*.js
+tsc
+# zip -r instancebleeper.zip src/*.js
 
 # deploy everything
 aws cloudformation create-stack --stack-name cf-stack-set-role \
 	--capabilities CAPABILITY_NAMED_IAM \
-	--template-body file://templates/AWSCloudFormationStackSetAdministrationRole.yml --region 'ap-souteast-1'
+	--template-body file://templates/AWSCloudFormationStackSetAdministrationRole.yml --region 'ap-southeast-1'
 
 aws cloudformation create-stack --stack-name cf-stack-set-role-trust \
 	--parameters ParameterKey=AdministratorAccountId,ParameterValue=$ACCOUNT_ID \
@@ -28,4 +28,6 @@ aws cloudformation create-stack-set --stack-set-name instance-bleeper \
 	--capabilities CAPABILITY_IAM --template-body file://templates/stack.yaml \
 	--parameters ParameterKey=DestinationEmail,ParameterValue=$DESTINATION_EMAIL --region 'ap-southeast-1'
 
-aws cloudformation create-stack-instances --stack-set-name instance-bleeper --accounts $ACCOUNT_ID --regions ${regions[@]}
+# aws cloudformation create-stack-instances --stack-set-name instance-bleeper --accounts $ACCOUNT_ID --regions ${regions[@]}
+
+`insert new cloudformation command here`
