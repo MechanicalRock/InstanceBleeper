@@ -1,61 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
 Parameters:
   DestinationEmail:
     Description: "The email to send the alert to"
     Type: String
+  BucketName:
+    Description: "Where the code is stored"
+    Type: String
 
 Resources:
-  EC2StateMonitor:
-    Type: "AWS::Events::Rule"
-    Properties:
-      Name: EC2StateMonitor
-      Description: EC2StateMonitor
-      EventPattern:
-        detail-type:
-          - "EC2 Instance State-change Notification"
-        source:
-          - "aws.ec2"
-        detail:
-          state:
-            - running  
-      Targets:
-         -
-           Arn:
-             Fn::GetAtt:
-               - "EventHandler"
-               - "Arn"
-           Id: "TargetFunctionV1"
-  EC2StateMonitorLambdaInvokePermission:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      FunctionName:
-        Ref: "EventHandler"
-      Action: "lambda:InvokeFunction"
-      Principal: "events.amazonaws.com"
-      SourceArn:
-        Fn::GetAtt:
-          - "EC2StateMonitor"
-          - "Arn"
-  EventHandler:
+  InstanceBleeperFunction:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: 
-          Fn::Join: [ "-", [ "instance-bleeper", !Ref "AWS::AccountId" ] ]
+        S3Bucket: !Ref BucketName
         S3Key: instancebleeper.zip
       Description: Instance Bleeper Event Handler
       FunctionName: InstanceBleeperEventHandler
       Environment:
           Variables:
               DestinationEmail: !Ref DestinationEmail
-      Handler: src/index.sendEmail
+      Handler: dist/index.sendEmail
       MemorySize: 1024
       Role:
         Fn::GetAtt:
-        - EventHandlerRole
+        - InstanceBleeperFunctionRole
         - Arn
       Runtime: nodejs4.3
       Timeout: 30
-  EventHandlerRole:
+
+  InstanceBleeperFunctionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -104,3 +78,38 @@ Resources:
                   "/aws/lambda/InstanceBleeperEventHandler*"
                 ]
               ]
+
+  EC2StateMonitor:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: EC2StateMonitor
+      Description: EC2StateMonitor
+      EventPattern:
+        detail-type:
+          - "EC2 Instance State-change Notification"
+        source:
+          - "aws.ec2"
+        detail:
+          state:
+            - running  
+      Targets:
+         -
+           Arn:
+             Fn::GetAtt:
+               - "InstanceBleeperFunction"
+               - "Arn"
+           Id: "TargetFunctionV1"
+
+  EC2StateMonitorLambdaInvokePermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - "InstanceBleeperFunction"
+          - "Arn"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "EC2StateMonitor"
+          - "Arn"
