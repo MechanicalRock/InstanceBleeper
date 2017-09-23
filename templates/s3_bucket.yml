@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  BucketName:
+    Description: "The email to send the alert to"
+    Type: String
+
+Resources:
+  LambdaCodeBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref BucketName

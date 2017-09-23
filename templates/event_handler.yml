@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  DestinationEmail:
+    Description: "The email to send the alert to"
+    Type: String
+  BucketName:
+    Description: "Where the code is stored"
+    Type: String
+
+Resources:
+  InstanceBleeperFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref BucketName
+        S3Key: instancebleeper.zip
+      Description: Instance Bleeper Event Handler
+      FunctionName: InstanceBleeperEventHandler
+      Environment:
+          Variables:
+              DestinationEmail: !Ref DestinationEmail
+      Handler: dist/index.sendEmail
+      MemorySize: 1024
+      Role:
+        Fn::GetAtt:
+        - InstanceBleeperFunctionRole
+        - Arn
+      Runtime: nodejs4.3
+      Timeout: 30
+
+  InstanceBleeperFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: EventHandlerPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ses:SendEmail
+            Resource: "*"  
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            Resource:
+              Fn::Join: [ ":",
+                [
+                  "arn:aws:logs",
+                  !Ref "AWS::Region",
+                  !Ref "AWS::AccountId",
+                  "*"
+                ]
+              ]
+          - Effect: Allow
+            Action:
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - logs:DescribeLogStream
+            Resource:
+              Fn::Join: [ ":",
+                [
+                  "arn:aws:logs",
+                  !Ref "AWS::Region",
+                  !Ref "AWS::AccountId",
+                  "log-group",
+                  "/aws/lambda/InstanceBleeperEventHandler*"
+                ]
+              ]
+
+  EC2StateMonitor:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: EC2StateMonitor
+      Description: EC2StateMonitor
+      EventPattern:
+        detail-type:
+          - "EC2 Instance State-change Notification"
+        source:
+          - "aws.ec2"
+        detail:
+          state:
+            - running  
+      Targets:
+         -
+           Arn:
+             Fn::GetAtt:
+               - "InstanceBleeperFunction"
+               - "Arn"
+           Id: "TargetFunctionV1"
+
+  EC2StateMonitorLambdaInvokePermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - "InstanceBleeperFunction"
+          - "Arn"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "EC2StateMonitor"
+          - "Arn"
