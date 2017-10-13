@@ -1,4 +1,3 @@
-import * as aws from 'aws-sdk';
 import * as templateBuilder from './emailTemplateBuilder';
 import { LambdaEvent, EmailTemplate, Email, Response } from './types';
 
