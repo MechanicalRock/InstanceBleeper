@@ -8,5 +8,5 @@ CloudFormation needs some very specific permissions to get a StackSet up and run
 # To Deploy
 
 ```bash
-./scripts/deploy.sh ${ACCOUNT_ID} ${DESTINATION_EMAIL} ${CAPABILITY_NAMED_IAM}
+./scripts/deploy.sh ${ACCOUNT_ID} ${DESTINATION_EMAIL} ${STACK_OWNER}
 ```
