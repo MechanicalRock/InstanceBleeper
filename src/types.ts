@@ -40,7 +40,9 @@ interface LambdaEvent {
 interface EmailTemplate {
     region: string,
     launchTime: string,
-    instanceId: string
+    instanceId: string,
+    accountName: string,
+    tags: Array<{name: string, value: string}>
 }
 
 interface Email {

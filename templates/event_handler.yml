@@ -5,7 +5,10 @@ Parameters:
     Description: "The email to send the alert to"
     Type: String
   BucketName:
-    Description: "Where the code is stored"
+    Description: "S3 Bucket where the code is stored"
+    Type: String
+  BucketKey:
+    Description: "S3 Bucket zip file key"
     Type: String
 
 Resources:
@@ -14,7 +17,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: !Ref BucketName
-        S3Key: instancebleeper.zip
+        S3Key: !Ref BucketKey
       Description: Instance Bleeper Event Handler
       FunctionName: InstanceBleeperEventHandler
       Environment:
@@ -50,6 +53,8 @@ Resources:
           - Effect: Allow
             Action:
             - ses:SendEmail
+            - organizations:DescribeAccount
+            - ec2:DescribeInstances
             Resource: "*"  
           - Effect: Allow
             Action:

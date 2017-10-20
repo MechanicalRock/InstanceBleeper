@@ -4,7 +4,7 @@
   "description": "notifies of newly created instances",
   "main": "lambda.js",
   "scripts": {
-    "test": "mocha --ui tdd --require ts-node/register  test/*.ts"
+    "test": "mocha --ui tdd --require ts-node/register test/*.ts"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,8 @@
     "@types/chai": "^4.0.4",
     "@types/dot": "^1.1.2",
     "@types/mocha": "^2.2.43",
-    "@types/node": "^8.0.28",
+    "@types/node": "^8.0.34",
+    "aws-sdk-mock": "^1.7.0",
     "chai": "^4.1.2",
     "mocha": "^3.5.3",
     "ts-node": "^3.3.0",
