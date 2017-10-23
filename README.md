@@ -1,5 +1,5 @@
-# InstanceBleeper
-Clouformation stack that creates a CloudWatch event and attach it to Lambda to notify user when an EC2 instance is created
+# Instance Bleeper
+A CloudFormation template that creates a CloudWatch event and attaches it to a Lambda in order to notify a user (or set of users) when an EC2 instance is created
 
 The template uses [stack set](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html) to ensure that you can deploy the lambda in all regions
 
