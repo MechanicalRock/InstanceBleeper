@@ -7,6 +7,6 @@ Parameters:
 
 Resources:
   LambdaCodeBucket:
-    Type: "AWS::S3::Bucket"
+    Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName

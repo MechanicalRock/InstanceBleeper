@@ -4,15 +4,16 @@ declare -a regions=('ap-southeast-1' 'ap-southeast-2' 'us-east-1' 'us-east-2' 'u
 
 # arguments
 ACCOUNT_ID=$1
-DESTINATION_EMAIL=$2
-STACK_OWNER=$3
+ACCOUNT_ALIAS=$2
+DESTINATION_EMAIL=$3
+STACK_OWNER=$4
 
 ZIP_FILE="instancebleeper$(date +%s).zip"
 
 pip install awscli --upgrade --user
 
-package lambda function
-sudo npm i -g typescript
+# package lambda function
+npm i -g typescript
 rm -rf node_modules
 npm i --only=production
 tsc
@@ -22,15 +23,14 @@ zip -r ${ZIP_FILE} dist node_modules templates/template.html
 for region in ${regions[@]}
 do
 	stack=$(aws cloudformation describe-stacks --stack-name cf-instance-bleeper --region "$region" --query 'Stacks[0]')
-	bucket_name="instance-bleeper-$region"
+	bucket_name="instance-bleeper-$ACCOUNT_ALIAS-$region"
 
 	if [ -z "$stack" ]; then
 		aws cloudformation create-stack --stack-name cf-instance-bleeper \
 		--capabilities CAPABILITY_NAMED_IAM \
 		--template-body file://templates/s3_bucket.yml \
-		--parameters 
+		--parameters \
 			ParameterKey=BucketName,ParameterValue=$bucket_name \
-			ParameterKey=BucketKey,ParameterValue=$ZIP_FILE \
 		--region $region \
 		--tags Key=Owner,Value="${STACK_OWNER}" \
 
@@ -46,6 +46,7 @@ do
 		ParameterKey=DestinationEmail,ParameterValue=$DESTINATION_EMAIL \
 		ParameterKey=BucketName,ParameterValue=$bucket_name \
 		ParameterKey=BucketKey,ParameterValue=$ZIP_FILE \
+        ParameterKey=AccountAlias,ParameterValue=$ACCOUNT_ALIAS \
 	--region $region \
 	--tags Key=Owner,Value="${STACK_OWNER}"
 done

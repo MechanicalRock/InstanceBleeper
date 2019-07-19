@@ -51,7 +51,7 @@ export const sendEmail = async(event: LambdaEvent, context: any, callback: any) 
         };
 
         callback(null, response);
-    
+
     }catch(err) {
         callback(JSON.stringify(err));
     }
