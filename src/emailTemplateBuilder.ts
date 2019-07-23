@@ -1,15 +1,15 @@
 import * as fs from 'fs';
 import * as dot from 'dot';
-import { getAWSAccount, getEC2Instance } from './awsUtils';
+import { getEC2Instance } from './awsUtils';
 import { EmailTemplate, LambdaEvent } from './types';
 
 const buildTemplateObject = async(event: LambdaEvent): Promise<EmailTemplate> => {
-    const instanceId = event.detail['instance-id']; 
+    const instanceId = event.detail['instance-id'];
     const instance = await getEC2Instance(instanceId);
-    const account = await getAWSAccount(event.account); 
 
     var tags: Array<{name:string, value:string}> = [];
-    
+    const accountName = `${<string>process.env.AccountAlias} (${<string>process.env.AccountId})`;
+
     if(instance.Tags) {
         tags = instance.Tags.map(tag => ({name: <string>tag.Key, value: <string>tag.Value}));
     }
@@ -18,9 +18,9 @@ const buildTemplateObject = async(event: LambdaEvent): Promise<EmailTemplate> =>
         region: event.region,
         launchTime: new Date(event.time).toLocaleString(),
         instanceId,
-        accountName: <string>account.Name,
+        accountName: accountName,
         tags
-    }   
+    }
 }
 
 const getFileContents = (file: string): string => {

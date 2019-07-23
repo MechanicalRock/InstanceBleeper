@@ -10,8 +10,16 @@ Parameters:
   BucketKey:
     Description: "S3 Bucket zip file key"
     Type: String
+  AccountAlias:
+    Description: "Account Alias used to identify the account in the emails"
+    Type: String
 
 Resources:
+  LambdaCodeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
   InstanceBleeperFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -23,6 +31,8 @@ Resources:
       Environment:
           Variables:
               DestinationEmail: !Ref DestinationEmail
+              AccountAlias: !Ref AccountAlias
+              AccountId: !Ref AWS::AccountId
       Handler: dist/index.sendEmail
       MemorySize: 1024
       Role:
@@ -55,7 +65,7 @@ Resources:
             - ses:SendEmail
             - organizations:DescribeAccount
             - ec2:DescribeInstances
-            Resource: "*"  
+            Resource: "*"
           - Effect: Allow
             Action:
             - logs:CreateLogGroup
@@ -96,7 +106,7 @@ Resources:
           - "aws.ec2"
         detail:
           state:
-            - running  
+            - running
       Targets:
          -
            Arn:
