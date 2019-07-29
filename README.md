@@ -25,12 +25,3 @@ You will need to authorize the destination email for each account as a valid rec
 ```bash
 aws ses verify-email-identity --email-address ${DESTINATION_EMAIL}
 ```
-
-## Auth
-
-```bash
-response=$(aws sts assume-role --role-arn arn:aws:iam::598112752826:role/DevOpsRole --role-session-name "CDKAdmin")
-export AWS_SECRET_ACCESS_KEY=$(echo $response | jq -r '.Credentials.SecretAccessKey')
-export AWS_ACCESS_KEY_ID=$(echo $response | jq -r '.Credentials.AccessKeyId')
-export AWS_SESSION_TOKEN=$(echo ${response} | jq -r '.Credentials.SessionToken')
-```
