@@ -9,7 +9,7 @@ The template uses [stack set](http://docs.aws.amazon.com/AWSCloudFormation/lates
 CloudFormation needs some very specific permissions to get a StackSet up and running. First, we need to create an IAM role called AWSCloudFormationStackSetAdministrationRole in what is called the “administrator account”. This is the account from which we create the StackSet and from where we’ll deploy the stacks in other accounts and regions. Next, we have the AWSCloudFormationStackSetExecutionRole IAM role. This role must exist in all accounts where we’re going to provision stacks. The first role will assume the latter role.
 
 ```bash
-./scripts/deploy-stackset.sh ${ACCOUNT_ID} ${ACCOUNT_ALIAS} ${DESTINATION_EMAIL} ${STACK_OWNER}
+./scripts/deploy-stackset.sh "${ACCOUNT_IDS}" ${ACCOUNT_ALIAS} ${DESTINATION_EMAIL} ${STACK_OWNER}
 ```
 
 ## No StackSet
@@ -24,4 +24,13 @@ You will need to authorize the destination email for each account as a valid rec
 
 ```bash
 aws ses verify-email-identity --email-address ${DESTINATION_EMAIL}
+```
+
+## Auth
+
+```bash
+response=$(aws sts assume-role --role-arn arn:aws:iam::598112752826:role/DevOpsRole --role-session-name "CDKAdmin")
+export AWS_SECRET_ACCESS_KEY=$(echo $response | jq -r '.Credentials.SecretAccessKey')
+export AWS_ACCESS_KEY_ID=$(echo $response | jq -r '.Credentials.AccessKeyId')
+export AWS_SESSION_TOKEN=$(echo ${response} | jq -r '.Credentials.SessionToken')
 ```

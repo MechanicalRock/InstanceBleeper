@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
   BucketName:
-    Description: "The email to send the alert to"
+    Description: "Bucket to store source code for instance-bleeper"
     Type: String
 
 Resources:
