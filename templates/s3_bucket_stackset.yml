@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  BucketName:
+    Description: "Bucket to store source code for instance-bleeper"
+    Type: String
+  AccountIDs:
+    Description: "List of accounts to allow principal access to the contents of the bucket"
+    Type: String
+
+Resources:
+
+  LambdaCodeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
+  LambdaCodeBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LambdaCodeBucket
+      PolicyDocument:
+        Statement:
+        - Action:
+            - "s3:GetObject"
+          Effect: "Allow"
+          Principal:
+            AWS:
+              Fn::Split:
+                - " "
+                - !Ref AccountIDs
+          Resource:
+            - !Sub arn:aws:s3:::${BucketName}/*
