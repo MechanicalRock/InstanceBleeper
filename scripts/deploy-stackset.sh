@@ -30,7 +30,7 @@ do
         --parameters \
             ParameterKey=BucketName,ParameterValue=$BUCKET_NAME-$REGION \
             ParameterKey=AccountIDs,ParameterValue=$ACCOUNT_IDS \
-        --tags Key=Owner,Value="${STACK_OWNER}" \
+        --tags Key=Owner,Value="${STACK_OWNER}" Key=Stack,Value=Prod Key=Project,Value=instance-bleeper \
         --region $REGION
 	fi
     aws s3 cp ./$ZIP_FILE s3://$BUCKET_NAME-$REGION/$ZIP_FILE
@@ -47,7 +47,7 @@ then
         ParameterKey=BucketName,ParameterValue=$BUCKET_NAME \
         ParameterKey=BucketKey,ParameterValue=$ZIP_FILE \
         ParameterKey=AccountAlias,ParameterValue=$ACCOUNT_ALIAS \
-    --tags Key=Owner,Value="${STACK_OWNER}"
+    --tags Key=Owner,Value="${STACK_OWNER}" Key=Stack,Value=Prod Key=Project,Value=instance-bleeper
 
     aws cloudformation create-stack-instances --stack-set-name instance-bleeper \
     --regions $REGIONS \
@@ -61,7 +61,7 @@ else
         ParameterKey=BucketName,ParameterValue=$BUCKET_NAME \
         ParameterKey=BucketKey,ParameterValue=$ZIP_FILE \
         ParameterKey=AccountAlias,ParameterValue=$ACCOUNT_ALIAS \
-    --tags Key=Owner,Value="${STACK_OWNER}"
+    --tags Key=Owner,Value="${STACK_OWNER}" Key=Stack,Value=Prod Key=Project,Value=instance-bleeper
 
     aws cloudformation update-stack-instances --stack-set-name instance-bleeper \
     --regions $REGIONS \
